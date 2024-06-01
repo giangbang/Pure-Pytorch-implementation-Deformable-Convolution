@@ -165,7 +165,7 @@ def deform_conv2d(
     if use_bias:
         output = output + bias.view(-1, 1, 1, 1)
     
-    return output.view(out_channels, batch_size, out_height, out_width).permute([1,0,2,3])
+    return output.permute([1,0,2,3])
 
 class DeformConv2d(nn.Module):
     """
