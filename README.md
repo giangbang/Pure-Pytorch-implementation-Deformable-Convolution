@@ -8,4 +8,4 @@ This implementation is compatible with the original cuda version, so that after 
 Fast forward two years later, and I still have not seen any implementation or repo that support running deformable conv on CPU, so I decided to make this code into a github repo.
 
 ## How to use
-If a working Pytorch library is presented, then no installation is needed. Just copying `deform_conv.py` to your project should be fine. For example usage, have a look at `examples.py`.
+If a working Pytorch library is presented, then no installation is needed. Just copying `deform_conv.py` to your project should be fine. For usage example, have a look at `examples.py`.
