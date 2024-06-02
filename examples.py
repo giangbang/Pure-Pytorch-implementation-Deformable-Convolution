@@ -1,4 +1,4 @@
-from .deform_conv import DeformConv2d
+from deform_conv_torch import DeformConv2d
 
 args = {
     "in_channels":4,
