@@ -109,7 +109,7 @@ def deform_conv2d(
         f"({batch_size} {out_channels} {out_height} {out_width})."
     )
     if use_mask:
-        mask_shape = mask.shape
+        mask_shape = tuple(mask.shape)
         mask_shape_shouldbe = (batch_size, offset.shape[1]//2, out_height, out_width)
         if mask_shape != mask_shape_shouldbe:
             raise RuntimeError(
@@ -168,7 +168,7 @@ def deform_conv2d(
         mapped_vals = mapped_vals * mask
         mapped_vals = mapped_vals.view(in_channels, k, batch_size, out_height, out_width)
 
-    mapped_vals = mapped_vals.view(groups, -1, batch_size * out_height * out_width) # g x C//g k x BHW
+    mapped_vals = mapped_vals.reshape(groups, -1, batch_size * out_height * out_width) # g x C//g k x BHW
 
     output = torch.matmul(weight.view(groups, out_channels//groups, -1), mapped_vals) 
     output = output.view(out_channels, batch_size, out_height, out_width)  # C' x BHW

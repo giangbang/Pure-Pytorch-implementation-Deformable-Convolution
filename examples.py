@@ -1,3 +1,4 @@
+import torch
 from deform_conv_torch import DeformConv2d
 
 args = {
@@ -14,27 +15,28 @@ args = {
 myDeform = DeformConv2d(**args)
 device = "cpu"
 myDeform.to(device)
-input = torch.rand(1, args["in_channels"], 30, 30,device=device)
 
+# random `input`, `offset` and `mask`
+input = torch.rand(1, args["in_channels"], 30, 30,device=device)
 
 # make sure the shape of `offset` and `mask` are correct
 offset = torch.rand(1, 36, 28, 28).to(device)
 mask = torch.rand((input.shape[0], 18, *offset.shape[2:]),device = device)
 
-my = myDeform(input, offset, mask)
+myres = myDeform(input, offset, mask)
 
 
-
-# pytorch deformanble
+# pytorch deformanble conv
 from  torchvision.ops.deform_conv import DeformConv2d as Deform_torch
 
 deform_code = Deform_torch(**args).to('cuda') # cuda is required
 
+# copy weights and bias
 deform_code.weight.data=myDeform.weight.data
 deform_code.bias.data=myDeform.bias.data
+
 res = deform_code(input, offset, mask)
-                                          
-print(res.shape)
+
 # compare result from this implementation and of pytorch
-print("difference between this implementation and pytorch's:",(res-my).square().sum().detach().item())
+print("difference between this implementation and pytorch's:",(res-myres).square().sum().detach().item())
 # difference between this implementation and pytorch's: 6.630807014573747e-13
