@@ -112,7 +112,8 @@ def deform_conv2d(
     # indices of padded input
     grid_i, grid_j = torch.meshgrid(
         torch.arange(-pad_h, in_height + pad_h, device=device),
-        torch.arange(-pad_w, in_width + pad_w, device=device)
+        torch.arange(-pad_w, in_width + pad_w, device=device), 
+        indexing='ij'
     )
 
     grid_coord = torch.cat((grid_i.unsqueeze(2), grid_j.unsqueeze(2)), 2).float() # w,h,2
