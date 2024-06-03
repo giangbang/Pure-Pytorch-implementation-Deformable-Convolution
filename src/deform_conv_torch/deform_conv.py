@@ -90,7 +90,6 @@ def deform_conv2d(
         )
 
     use_mask = mask is not None
-    use_bias = bias is not None
 
     out_channels, _, kernel_height, kernel_width = weight.shape
     batch_size, in_channels, in_height, in_width = input.shape
@@ -101,13 +100,23 @@ def deform_conv2d(
     device = input.device
 
     output_size_shouldbe = _output_size(input, weight, padding, dilation, stride)
-    assert output_size_shouldbe == (batch_size, out_channels, out_height, out_width), (
-        "The shape of `offset` is incorrect? "
+    if output_size_shouldbe != (batch_size, out_channels, out_height, out_width):
+        raise RuntimeError(
+        "Is the shape of `offset` incorrect? "
         "We expect (batch_size, out_channels, out_height, out_width) to be "
         f"{output_size_shouldbe}"
         ", but we get: "
         f"({batch_size} {out_channels} {out_height} {out_width})."
     )
+    if use_mask:
+        mask_shape = mask.shape
+        mask_shape_shouldbe = (batch_size, offset.shape[1]//2, out_height, out_width)
+        if mask_shape != mask_shape_shouldbe:
+            raise RuntimeError(
+                "Expect the shape of `mask` to be "
+                f"{mask_shape_shouldbe}, "
+                f"but we get {mask_shape}."
+            )
 
     # indices of padded input
     grid_i, grid_j = torch.meshgrid(
@@ -158,12 +167,13 @@ def deform_conv2d(
         assert len(mapped_vals.shape) == len(mask.shape), f"{mapped_vals.shape} {mask.shape}"
         mapped_vals = mapped_vals * mask
         mapped_vals = mapped_vals.view(in_channels, k, batch_size, out_height, out_width)
-    mapped_vals = mapped_vals.reshape(groups, -1, batch_size * out_height * out_width) # g x C//g k x BHW
+
+    mapped_vals = mapped_vals.view(groups, -1, batch_size * out_height * out_width) # g x C//g k x BHW
 
     output = torch.matmul(weight.view(groups, out_channels//groups, -1), mapped_vals) 
     output = output.view(out_channels, batch_size, out_height, out_width)  # C' x BHW
 
-    if use_bias:
+    if bias is not None:
         output = output + bias.view(-1, 1, 1, 1)
     
     return output.permute([1,0,2,3])
