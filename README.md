@@ -14,7 +14,7 @@ If a working PyTorch library is installed, no additional installation is require
 pip install git+https://github.com/giangbang/Pure-Pytorch-implementation-Deformable-Convolution
 ```
 
-For usage examples, refer to `examples.py`. The API is designed to be similar to `torchvision.ops.deform_conv2d` and `torchvision.ops.DeformConv2d`. Therefore, integrating it into a codebase that already utilizes the CUDA version should be seamless. You may only need to add a checking condition to ensure compatibility with the device being used.
+For usage examples, refer to `examples.py`. The API is similar to `torchvision.ops.deform_conv2d` and `torchvision.ops.DeformConv2d`. Therefore, integrating it into a codebase that already utilizes the CUDA version should be seamless. You may only need to add a checking condition to ensure compatibility with the device being used.
 ```python
 if use_cpu:
     from deform_conv_torch import DeformConv2d, deform_conv2d
