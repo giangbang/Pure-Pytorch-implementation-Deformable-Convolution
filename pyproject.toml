@@ -21,6 +21,9 @@ dependencies = [
 ]
 requires-python = ">=3.7"
 
+[tool.setuptools]
+packages = ["deform_conv_torch"]
+
 [project.optional-dependencies]
 dev = ["black", "bumpver", "isort", "pip-tools", "pytest", "torchvision"]
 
